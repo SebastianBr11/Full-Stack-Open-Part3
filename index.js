@@ -7,7 +7,7 @@ const app = express()
 
 app.use(express.json())
 
-morgan.token('object', (req, res) => JSON.stringify(req.body))
+morgan.token('object', req => JSON.stringify(req.body))
 
 app.use(
   morgan(
@@ -19,7 +19,7 @@ app.use(cors())
 
 app.use(express.static('build'))
 
-let persons = [
+/* let persons = [
   {
     name: 'Arto Hellas',
     number: '040-123456',
@@ -40,7 +40,7 @@ let persons = [
     number: '39-23-6423122',
     id: 4
   }
-]
+] */
 
 app.get('/info', (req, res) => {
   Person.find({}).then(people => {
@@ -57,7 +57,7 @@ app.get('/api/persons', (req, res) => {
   })
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
   Person.findById(req.params.id)
     .then(person => {
       if (person) {
@@ -91,9 +91,9 @@ app.post('/api/persons', (req, res, next) => {
     .catch(err => next(err))
 })
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-    .then(result => {
+    .then(() => {
       res.status(204).end()
     })
     .catch(err => next(err))
